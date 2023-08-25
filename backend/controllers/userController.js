@@ -111,15 +111,15 @@ export async function getUserController(req, res) {
 export async function addHealthLogController(req, res) {
   try {
     const userId = req.user.userId; // Zugriff auf die Benutzer-ID aus dem authMiddleware
-    const { date, meal, symptom, bowelMovement, time } = req.body;
+    const { date, mahlzeit, symptom, stuhlgang, zeit } = req.body;
 
     const newLog = new HealthLog({
       userId,
       date,
-      meal,
+      mahlzeit,
       symptom,
-      bowelMovement,
-      time,
+      stuhlgang,
+      zeit,
     });
 
     const savedLog = await newLog.save();

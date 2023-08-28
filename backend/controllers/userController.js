@@ -3,7 +3,7 @@ import HealthLog from "../model/healthLogModel.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import bcrypt from "bcrypt";
 import { createToken } from "../lib/auth.js";
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
 export async function createUserController(req, res) {
   try {
@@ -28,26 +28,6 @@ export async function createUserController(req, res) {
 }
 
 export async function loginUserController(req, res) {
-
-  //   try {
-  //     const user = await userModel.findOne({ email: req.body.email })
-  //     console.log(user)
-
-  //     if (user) {
-  //         const isMatching = await bcrypt.compare(req.body.password, user.password)
-  //         if (isMatching) {
-  //             const token = await createToken({customerId: user.customerId, userId:user._id},{expiresIn: "1h"});
-  //             console.log({token});
-  //             return res.status(200).cookie("jwt", token, {httpOnly:true}).json({message:"Login successful!"});
-  //         }
-  //         return res.status(401).json({message:"Access denied! Invalid credentials."})
-  //     }
-  //     return res.status(404).json({message:"User not found!"});
-
-  // } catch (err) {
-  //     res.status(500).json(err)
-  // }
-
   try {
     const user = await userModel.findOne({ email: req.body.email });
     console.log({ user });
@@ -56,10 +36,11 @@ export async function loginUserController(req, res) {
       const isMatching = await bcrypt.compare(req.body.password, user.password);
       console.log(isMatching);
       if (isMatching) {
-        const token = await createToken({
-          customerId: user.customerId,
-          userId: user._id
-        },
+        const token = await createToken(
+          {
+            customerId: user.customerId,
+            userId: user._id,
+          }
           // {expiresIn: "1h"}
         );
         // option (Token Gültigkeit 1 Stunde)
@@ -75,17 +56,50 @@ export async function loginUserController(req, res) {
     }
 
     return res.status(404).json({ message: "User not found!" });
-
-
   } catch (error) {
     res.status(500).json(error);
   }
 }
 
+// export async function userLogoutController(req, res) {
+//   try {
+//     const token = req.cookies.jwt; // Das JWT-Token aus den Cookies holen
+//     const decodedToken = await validateToken(token); // Das Token entschlüsseln
+
+//     if (decodedToken.userId === req.user.userId) {
+//       // Vergleiche die Benutzer-ID im Token mit der aktuellen Benutzer-ID
+//       res.clearCookie("jwt"); // Lösche das JWT-Cookie
+//       res.status(200).json({ message: "Logout erfolgreich" });
+//     } else {
+//       res.status(403).json({ message: "Nicht autorisiert zum Ausloggen" });
+//     }
+//   } catch (error) {
+//     res.status(500).json(error);
+//   }
+// }
+
+export async function userLogoutController(req, res) {
+  try {
+    res.clearCookie("jwt"); // Lösche das JWT-Cookie
+    res.status(200).json({ message: "Logout erfolgreich" });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+}
+
+
 export async function getAllUsersController(req, res) {
   try {
-    const allUsers = await userModel.find();
-    res.status(200).json(allUsers);
+    // Führe die Authentifizierungsprüfung mithilfe der Middleware durch
+    authMiddleware(req, res, async () => {
+      try {
+        // Wenn die Authentifizierung erfolgreich ist, führe den Logout-Prozess durch
+        res.clearCookie("jwt"); // Lösche das JWT-Cookie
+        res.status(200).json({ message: "Logout erfolgreich" });
+      } catch (error) {
+        res.status(500).json(error);
+      }
+    });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -96,7 +110,7 @@ export async function getUserController(req, res) {
   try {
     const userId = req.user.userId; // Assuming your authentication middleware sets the userId in req.user
     const user = await userModel.findOne({ _id: userId });
-    
+
     if (user) {
       const userName = user.name;
       return res.status(200).json({ name: userName });
@@ -125,8 +139,17 @@ export async function addHealthLogController(req, res) {
     const savedLog = await newLog.save();
     res.status(201).json(savedLog);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json(error.message);
   }
 }
 
+export async function getAllForUserController(req, res) {
+  try {
+    const userId = req.user.userId; // Annahme: Die Benutzer-ID wird im authMiddleware festgelegt
+    const userLogs = await HealthLog.find({ userId }).sort({ date: 1 });
+    res.status(200).json(userLogs);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+}

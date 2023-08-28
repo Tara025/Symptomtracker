@@ -8,7 +8,8 @@ import  * as user from "../controllers/userController.js";
 const dataRouter = express.Router();
 
 
-dataRouter.post("/data/healthlog", authMiddleware, user.addHealthLogController);
 
+dataRouter.get("/data/healthlogs", authMiddleware, user.getAllForUserController);
+dataRouter.post("/data/healthlog", authMiddleware, user.addHealthLogController);
 
 export default dataRouter;

@@ -54,7 +54,7 @@ function RegisterUser() {
   return (
     <div className="dashboard-container">
       <form>
-        <label>name</label>
+        <label>Username</label>
         <input
           value={user.name}
           onChange={(event) =>

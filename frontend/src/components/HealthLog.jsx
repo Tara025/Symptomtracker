@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import "../App.css"; // Importiere das Styling aus der HealthLog.css-Datei
 
 const HealthLog = () => {
-  const navigate = useNavigate();
   const [mahlzeit, setMahlzeit] = useState("");
   const [symptom, setSymptom] = useState("");
   const [stuhlgang, setStuhlgang] = useState("");
@@ -11,11 +10,13 @@ const HealthLog = () => {
   const [date, setDate] = useState("");
   const [eintrag, setEintrag] = useState([]);
   const [firstEintragSend, setFirstEintragSend] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (firstEintragSend) {
-      // Wenn der erste Eintrag gesendet wurde, hole die Einträge vom Server
+     // Nur beim ersten Rendern der Komponente ausführen
+     if (!firstEintragSend) {
       fetchEntries();
+      setFirstEintragSend(true); // Markieren Sie, dass die Einträge bereits abgerufen wurden
     }
   }, [firstEintragSend]);
 
@@ -68,6 +69,9 @@ const HealthLog = () => {
         setStuhlgang("");
         setZeit("");
         setDate("");
+
+        fetchEntries();
+
       } else {
         const serverAnswer = await response.text();
         console.error(
@@ -104,7 +108,6 @@ const HealthLog = () => {
   return (
     <div className="health-log-container">
       <h2>Gesundheitsprotokoll</h2>
-      
       <div className="form-container">
         <form onSubmit={handleSubmit}>
           <label>
@@ -148,8 +151,8 @@ const HealthLog = () => {
             />
           </label>
           <button type="submit">Senden</button>
-      </form>
-      <br />
+        </form>
+        <br />
       <button className="auth-button" onClick={handleLogout}>
         Logout
       </button>
@@ -175,7 +178,6 @@ const HealthLog = () => {
             ))}
           </ul>
         </div>
-        
       )}
     </div>
   );

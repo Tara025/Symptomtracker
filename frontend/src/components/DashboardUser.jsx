@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'; // Stelle sicher, dass du den Router ko
 
 function DashboardUser() {
   return (
-    <div className="dashboard-container">
+    <div className="style-container">
       <h1>Symptomtracker</h1>
      
       <div className="button-container">

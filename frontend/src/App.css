@@ -63,7 +63,7 @@ h1 {
   align-items: center;
   margin-top: 2rem;
   background-image: url("./assets/symptomtracker_background.jpg");
-  /* background-repeat: no-repeat; */
+  background-size:contain;
  
 }
 

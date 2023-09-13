@@ -52,7 +52,7 @@ function RegisterUser() {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="style-container">
       <form>
         <label>Username</label>
         <input

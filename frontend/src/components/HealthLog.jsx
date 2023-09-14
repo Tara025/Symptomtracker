@@ -205,7 +205,7 @@ const HealthLog = () => {
               </div>
               <div className="entry-time">Uhrzeit: {entry.zeit}</div>
               <div className="entry-details">
-                <div>Mahlzeit: {entry.mahlzeit}</div>
+                <div>{entry.mahlzeit}</div>
                 <div>Symptom: {entry.symptom}</div>
                 <div>Stuhlgang: {entry.stuhlgang}</div>
               </div>
